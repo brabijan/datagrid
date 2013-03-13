@@ -1,0 +1,22 @@
+{
+	"name": "brabijan/datagrid",
+	"type": "library",
+	"description": "Simple datagrid for Nette framework using Twitter bootstrap",
+	"keywords": ["nette", "datagrid", "bootstrap"],
+	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+	"authors": [
+		{
+			"name": "Jan Brabec"
+		}
+	],
+	"support": {
+		"email": "brabijan@gmail.com",
+		"issues": "https://github.com/brabijan/datagrid/issues"
+	},
+	"require": {
+		"nette/nette": "@dev"
+	},
+	"require-dev": {
+		"nette/tester": "@dev"
+	}
+}
