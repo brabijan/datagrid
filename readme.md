@@ -30,7 +30,7 @@ protected function createComponentDatagrid() {
 			"name" => "Peter",
 			"surname" => "Griffin",
 			"birth" => "18.6.1969",
-			"age" => 42
+			"age" => 43
 		),
 	);
 
@@ -60,13 +60,13 @@ Output
 	</tr>
 	<tr>
 		<td><a href="/presenter/edit/1"><i class="icon-edit"></i></a></td>
-		<td><a href="/presenter/edit/1?do=delete"><i class="icon-edit"></i></a></td>
+		<td><a href="/presenter/edit/1?do=delete"><i class="icon-delete"></i></a></td>
 		<td>Jan Brabec</td>
 		<td>2.1.1991 (22 y.o.)</td>
 	</tr>
 	<tr>
 		<td><a href="/presenter/edit/2"><i class="icon-edit"></i></a></td>
-		<td><a href="/presenter/edit/2?do=delete"><i class="icon-edit"></i></a></td>
+		<td><a href="/presenter/edit/2?do=delete"><i class="icon-delete"></i></a></td>
 		<td>Peter Griffin</td>
 		<td>18.6.1969 (43 y.o.)</td>
 	</tr>
