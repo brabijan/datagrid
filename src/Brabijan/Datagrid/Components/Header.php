@@ -1,6 +1,6 @@
 <?php
 
-namespace Brabijan\Datagrid;
+namespace Brabijan\Datagrid\Components;
 
 use Nette,
 	QOP;

@@ -28,13 +28,13 @@ class Control extends Nette\Application\UI\Control {
 		$rows = array();
 		$primaryKey = $this->renderer->getRowPrimaryKey();
 		foreach($this->renderer->getData() as $row) {
-			$rows[] = $this["row_" . $row[$primaryKey]] = new Row( $this->renderer->getCollumns(), $row );
+			$rows[] = $this["row_" . $row[$primaryKey]] = new Components\Row( $this->renderer->getCollumns(), $row );
 		}
 		$this->template->rows = $rows;
 		$this->template->render();
 	}
 
 	public function createComponentHeader() {
-		return new Header( $this->renderer->getCollumns() );
+		return new Components\Header( $this->renderer->getCollumns() );
 	}
 }
