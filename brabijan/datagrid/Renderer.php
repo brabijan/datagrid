@@ -1,6 +1,6 @@
 <?php
 
-namespace TwitterBootstrap\Datagrid;
+namespace Brabijan\Datagrid;
 
 use Nette,
 	QOP;

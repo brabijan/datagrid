@@ -34,7 +34,7 @@ protected function createComponentDatagrid() {
 		),
 	);
 
-	$datagrid = new TwitterBootstrap\Datagrid\Renderer();
+	$datagrid = new Brabijan\Datagrid\Renderer();
 	// $datagrid->addCollumn($title, $parameter[, $format])
 	$datagrid->addCollumn("edit", "id", '<a n:href="Presenter:edit $id"><i class="icon-edit"></i></a>')->hideTitle();
 	$datagrid->addCollumn("remove", "id", '<a n:href="delete! $id"><i class="icon-trash"></i></a>')->hideTitle();
