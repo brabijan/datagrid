@@ -18,5 +18,10 @@
 	},
 	"require-dev": {
 		"nette/tester": "@dev"
+	},
+	"autoload": {
+		"psr-0": {
+			"Brabijan\\": "src/"
+		}
 	}
 }
