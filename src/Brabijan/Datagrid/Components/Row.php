@@ -8,18 +8,18 @@ use Nette,
 class Row extends Nette\Application\UI\Control {
 
 	/** @var array */
-	private $collumns;
+	private $columns;
 
 	/** @var mixed */
 	private $data;
 
 	/**
-	 * @param array $collumns
+	 * @param array $columns
 	 * @param array $data
 	 */
-	public function __construct($collumns, $data) {
+	public function __construct($columns, $data) {
 		parent::__construct();
-		$this->collumns = $collumns;
+		$this->columns = $columns;
 		$this->data = $data;
 	}
 
@@ -28,27 +28,27 @@ class Row extends Nette\Application\UI\Control {
 	 */
 	public function render() {
 		$this->template->setFile(__DIR__ . "/row.latte");
-		$collumns = array();
+		$columns = array();
 		$data = $this->data;
-		foreach($this->collumns as $collumn) {
-			if($collumn->content == null) {
+		foreach($this->columns as $column) {
+			if($column->content == null) {
 				$content = "";
-				foreach($collumn->mappedParameter as $parameter) {
+				foreach($column->mappedParameter as $parameter) {
 					$content .= '{$' . $parameter . '} ';
 				}
 			}
 			else {
-				$content = $collumn->content;
+				$content = $column->content;
 			}
 			$template = $this->createTemplate('Nette\Templating\Template');
 			$template->{'_control'} = $this->presenter;
-			foreach($collumn->mappedParameter as $parameter) {
+			foreach($column->mappedParameter as $parameter) {
 				$template->{$parameter} = $data[$parameter];
 			}
 			$template->setSource($content);
-			$collumns[] = (string) $template;
+			$columns[] = (string) $template;
 		}
-		$this->template->collumns = $collumns;
+		$this->template->columns = $columns;
 		$this->template->render();
 	}
 }

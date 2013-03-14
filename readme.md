@@ -35,11 +35,11 @@ protected function createComponentDatagrid() {
 	);
 
 	$datagrid = new Brabijan\Datagrid\Renderer();
-	// $datagrid->addCollumn($title, $parameter[, $format])
-	$datagrid->addCollumn("edit", "id", '<a n:href="Presenter:edit $id"><i class="icon-edit"></i></a>')->hideTitle();
-	$datagrid->addCollumn("remove", "id", '<a n:href="delete! $id"><i class="icon-trash"></i></a>')->hideTitle();
-	$datagrid->addCollumn("Full name", array("name", "surname"));
-	$datagrid->addCollumn("Date of birth (age)", array("birth", "age"), '{$birth} ({$age} y.o.)');
+	// $datagrid->addColumn($title, $parameter[, $format])
+	$datagrid->addColumn("edit", "id", '<a n:href="Presenter:edit $id"><i class="icon-edit"></i></a>')->hideTitle();
+	$datagrid->addColumn("remove", "id", '<a n:href="delete! $id"><i class="icon-trash"></i></a>')->hideTitle();
+	$datagrid->addColumn("Full name", array("name", "surname"));
+	$datagrid->addColumn("Date of birth (age)", array("birth", "age"), '{$birth} ({$age} y.o.)');
 	$datagrid->setRowPrimaryKey("id");
 	$datagrid->setData($data);
 

@@ -2,10 +2,9 @@
 
 namespace Brabijan\Datagrid;
 
-use QOP,
-	Nette;
+use Nette;
 
-class Collumn extends Nette\Object {
+class Column extends Nette\Object {
 
 	/** @var string */
 	private $name;
@@ -42,7 +41,7 @@ class Collumn extends Nette\Object {
 	}
 
 	/**
-	 * @return string collumn name
+	 * @return string column name
 	 */
 	public function getName($ingoreHidden = false) {
 		$title = $this->name;

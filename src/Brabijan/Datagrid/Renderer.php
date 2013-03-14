@@ -11,7 +11,7 @@ class Renderer extends Nette\Object {
 	private $data = array();
 
 	/** @var array */
-	private $collumns = array();
+	private $columns = array();
 
 	/** @var string */
 	private $rowPrimaryKey;
@@ -20,20 +20,20 @@ class Renderer extends Nette\Object {
 	 * @param      $name
 	 * @param      $type
 	 * @param null $mappedParameter
-	 * @return Collumn
+	 * @return Column
 	 */
-	public function addCollumn($name, $mappedParameter, $format = null) {
-		$collumn = new Collumn( $name, $mappedParameter, $format );
-		$this->collumns[$name] = $collumn;
+	public function addColumn($name, $mappedParameter, $format = null) {
+		$column = new Column( $name, $mappedParameter, $format );
+		$this->columns[$name] = $column;
 
-		return $collumn;
+		return $column;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getCollumns() {
-		return $this->collumns;
+	public function getColumns() {
+		return $this->columns;
 	}
 
 	/**
@@ -65,79 +65,79 @@ class Renderer extends Nette\Object {
 	}
 
 	/**
-	 * @param string $collumnName collumn name
+	 * @param string $columnName column name
 	 */
-	public function removeCollumn($collumnName) {
-		unset($this->collumns[$collumnName]);
+	public function removeColumn($columnName) {
+		unset($this->columns[$columnName]);
 	}
 
 	/**
-	 * @param $collumnName
-	 * @return Collumn
+	 * @param $columnName
+	 * @return Column
 	 */
-	public function getCollumn($collumnName) {
-		return $this->collumns[$collumnName];
+	public function getColumn($columnName) {
+		return $this->columns[$columnName];
 	}
 
 	/**
-	 * @param string $collumn collumn name
+	 * @param string $column column name
 	 * @param string $where first|last|before|after
-	 * @param string $after collumn name
+	 * @param string $after column name
 	 * @throws \Nette\InvalidStateException
 	 */
-	public function move($collumn, $where, $after = null) {
+	public function move($column, $where, $after = null) {
 		if($where == "first") {
-			$collumns = array();
-			$collumns[$collumn] = $this->collumns[$collumn];
-			foreach($this->collumns as $collumnName => $tmpCollumn) {
-				if($collumnName!=$collumn) {
-					$collumns[$collumnName] = $tmpCollumn;
+			$columns = array();
+			$columns[$column] = $this->columns[$column];
+			foreach($this->columns as $columnName => $tmpcolumn) {
+				if($columnName!=$column) {
+					$columns[$columnName] = $tmpcolumn;
 				}
 			}
-			$this->collumns = $collumns;
+			$this->columns = $columns;
 			return;
 		}
 		elseif($where == "last") {
-			$collumns = array();
-			foreach($this->collumns as $collumnName => $tmpCollumn) {
-				if($collumnName!=$collumn) {
-					$collumns[$collumnName] = $tmpCollumn;
+			$columns = array();
+			foreach($this->columns as $columnName => $tmpcolumn) {
+				if($columnName!=$column) {
+					$columns[$columnName] = $tmpcolumn;
 				}
 			}
-			$collumns[$collumn] = $this->collumns[$collumn];
-			$this->collumns = $collumns;
+			$columns[$column] = $this->columns[$column];
+			$this->columns = $columns;
 			return;
 		}
 		elseif($where == "before") {
 			if($after == null) {
 				throw new Nette\InvalidStateException("Some parameter missing");
 			}
-			$collumns = array();
-			foreach($this->collumns as $collumnName => $tmpCollumn) {
-				if($collumnName==$after) {
-					$collumns[$collumn] = $this->collumns[$collumn];
+			$columns = array();
+			foreach($this->columns as $columnName => $tmpcolumn) {
+				if($columnName==$after) {
+					$columns[$column] = $this->columns[$column];
 				}
-				if($collumnName!=$collumn) {
-					$collumns[$collumnName] = $tmpCollumn;
+				if($columnName!=$column) {
+					$columns[$columnName] = $tmpcolumn;
 				}
 			}
-			$this->collumns = $collumns;
+			$this->columns = $columns;
 			return;
 		}
 		elseif($where == "after") {
 			if($after == null) {
 				throw new Nette\InvalidStateException("Some parameter missing");
 			}
-			$collumns = array();
-			foreach($this->collumns as $collumnName => $tmpCollumn) {
-				if($collumnName!=$collumn) {
-					$collumns[$collumnName] = $tmpCollumn;
+			$columns = array();
+			foreach($this->columns as $columnName => $tmpcolumn) {
+				if($columnName!=$column) {
+					$columns[$columnName] = $tmpcolumn;
 				}
-				if($collumnName==$after) {
-					$collumns[$collumn] = $this->collumns[$collumn];
+				if($columnName==$after) {
+					$columns[$column] = $this->columns[$column];
 				}
 			}
-			$this->collumns = $collumns;
+			$this->columns = $columns;
 			return;
 		}
 	}

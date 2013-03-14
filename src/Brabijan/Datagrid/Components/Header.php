@@ -8,16 +8,16 @@ use Nette,
 class Header extends Nette\Application\UI\Control {
 
 	/** @var array */
-	private $collumns;
+	private $columns;
 
-	public function __construct($collumns) {
+	public function __construct($columns) {
 		parent::__construct();
-		$this->collumns = $collumns;
+		$this->columns = $columns;
 	}
 
 	public function render() {
 		$this->template->setFile(__DIR__ . "/header.latte");
-		$this->template->collumns = $this->collumns;
+		$this->template->columns = $this->columns;
 		$this->template->render();
 	}
 }
