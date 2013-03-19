@@ -3,7 +3,9 @@
 namespace Brabijan\Datagrid;
 
 use Nette,
-	QOP;
+	Nette\Application\UI\Form,
+	QOP,
+	Kdyby;
 
 class Renderer extends Nette\Application\UI\Control {
 
@@ -32,6 +34,15 @@ class Renderer extends Nette\Application\UI\Control {
 
 	/** @var Nette\Callback */
 	private $paginatorCallback;
+
+	/** @var Nette\Callback */
+	private $filterFormFactory;
+
+	/** @var Nette\Callback */
+	private $filterCallback;
+
+	/** @persistent */
+	public $filter = array();
 
 	/**
 	 * @param $name
@@ -74,13 +85,15 @@ class Renderer extends Nette\Application\UI\Control {
 	 * @return mixed array|Nette\Database\Table\Selection
 	 */
 	public function getData() {
+		$data = $this->data;
+		if(!empty($this->filter)) {
+			$data = $this->filterCallback->invokeArgs(array($data, $this->filter));
+		}
 		if($this->isPaginatorEnabled()) {
-			$this->paginator->setItemCount(count($this->data));
-			return $this->paginatorCallback->invokeArgs(array($this->data, $this->paginator->getLength(), $this->paginator->getOffset()));
+			$this->paginator->setItemCount(count($data));
+			$data = $this->paginatorCallback->invokeArgs(array($data, $this->paginator->getLength(), $this->paginator->getOffset()));
 		}
-		else {
-			return $this->data;
-		}
+		return $data;
 	}
 
 	/**
@@ -239,6 +252,34 @@ class Renderer extends Nette\Application\UI\Control {
 			throw new Nette\InvalidStateException("Enable paginator first using enablePaginator()");
 		}
 		return $this->paginator;
+	}
+
+
+	/************************************************** filter ********************************************************/
+
+	public function setFilterFormFactory($callback) {
+		$this->filterFormFactory = new Nette\Callback($callback);
+	}
+
+	public function setFilterCallback($callback) {
+		$this->filterCallback = new Nette\Callback($callback);
+	}
+
+	protected function createComponentFilterForm() {
+		$form = new Form;
+		$form->addContainer("filter");
+		$this->filterFormFactory->invokeArgs(array($form["filter"]));
+		$form->addSubmit("send", "Filter!");
+		$form->onSuccess[] = $this->filterFormSubmitted;
+		if($this->translator instanceof Nette\Localization\ITranslator) {
+			$form->setTranslator($this->translator);
+		}
+		$form->setRenderer(new Kdyby\BootstrapFormRenderer\BootstrapRenderer());
+		return $form;
+	}
+
+	public function filterFormSubmitted(Form $form) {
+		$this->filter = $form->values["filter"];
 	}
 
 
