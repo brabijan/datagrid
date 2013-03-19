@@ -22,7 +22,7 @@ class Renderer extends Nette\Object {
 	private $translator;
 
 	/** @var string */
-	private $rowPrimaryKey;
+	private $rowPrimaryKey = "id";
 
 	/** @var Nette\Utils\Paginator */
 	private $paginator;
