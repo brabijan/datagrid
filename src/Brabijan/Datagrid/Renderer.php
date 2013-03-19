@@ -17,9 +17,9 @@ class Renderer extends Nette\Object {
 	private $rowPrimaryKey;
 
 	/**
-	 * @param      $name
-	 * @param      $type
-	 * @param null $mappedParameter
+	 * @param $name
+	 * @param $mappedParameter
+	 * @param null $format
 	 * @return Column
 	 */
 	public function addColumn($name, $mappedParameter, $format = null) {
