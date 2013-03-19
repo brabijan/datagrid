@@ -1,6 +1,29 @@
+{if $paginationPosition !== "__pagination_none_"}
+	{capture $paginatorControl}
+		{var $pg = $paginator}
+		{var $previous = $pg->isFirst() ? $pg->firstPage : $pg->page - 1 }
+		{var $next = $pg->isLast() ? $pg->firstPage : $pg->page + 1 }
+		<div class="pagination pagination-small pagination-centered">
+			<ul>
+				<li n:class="$pg->isFirst() ? disabled"><a n:href="setPage! $previous">Prev</a></li>
+				{for $i = 1; $i <= $pg->pageCount; $i++}
+					<li n:class="$i == $pg->page ? active"><a n:href="setPage! $i">{$i}</a></li>
+				{/for}
+				<li n:class="$pg->isLast() ? disabled"><a n:href="setPage! $next">Next</a></li>
+			</ul>
+		</div>
+	{/capture}
+{/if}
+
+{if $paginationPosition === "__pagination_top_" or $paginationPosition === "__pagination_both_"}
+	{!$paginatorControl}
+{/if}
 <table class="table table-hover table-striped">
 	{control header}
 	{foreach $rows as $row}
 		{$row->render()}
 	{/foreach}
 </table>
+{if $paginationPosition === "__pagination_bottom_" or $paginationPosition === "__pagination_both_"}
+	{!$paginatorControl}
+{/if}

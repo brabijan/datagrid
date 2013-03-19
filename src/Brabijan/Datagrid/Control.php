@@ -36,8 +36,23 @@ class Control extends Nette\Application\UI\Control {
 		foreach($this->renderer->getData() as $row) {
 			$rows[] = $this["row_" . $row[$primaryKey]] = new Components\Row( $this->renderer->getColumns(), $row );
 		}
+
+		if($this->renderer->isPaginatorEnabled()) {
+			$this->template->paginationPosition = $this->renderer->paginationPositions;
+			$this->template->paginator = $this->renderer->paginator;
+		}
+		else {
+			$this->template->paginationPosition = Renderer::PAGINATION_NONE;
+		}
 		$this->template->rows = $rows;
 		$this->template->render();
+	}
+
+	public function handleSetPage($page) {
+		$this->renderer->paginator->setPage($page);
+		if($this->presenter->isAjax()) {
+			$this->invalidateControl("datagrid");
+		}
 	}
 
 	public function createComponentHeader() {

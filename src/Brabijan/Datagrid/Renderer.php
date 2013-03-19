@@ -7,6 +7,11 @@ use Nette,
 
 class Renderer extends Nette\Object {
 
+	const PAGINATION_NONE = "__pagination_none_";
+	const PAGINATION_TOP = "__pagination_top_";
+	const PAGINATION_BOTTOM = "__pagination_bottom_";
+	const PAGINATION_BOTH = "__pagination_both_";
+
 	/** @var mixed array|Nette\Database\Table\Selection */
 	private $data = array();
 
@@ -18,6 +23,15 @@ class Renderer extends Nette\Object {
 
 	/** @var string */
 	private $rowPrimaryKey;
+
+	/** @var Nette\Utils\Paginator */
+	private $paginator;
+
+	/** @var string */
+	private $paginationPositions = Renderer::PAGINATION_NONE;
+
+	/** @var Nette\Callback */
+	private $paginatorCallback;
 
 	/**
 	 * @param $name
@@ -60,7 +74,14 @@ class Renderer extends Nette\Object {
 	 * @return mixed array|Nette\Database\Table\Selection
 	 */
 	public function getData() {
-		return $this->data;
+		Nette\Diagnostics\Debugger::barDump($this->isPaginatorEnabled());
+		if($this->isPaginatorEnabled()) {
+			$this->paginator->setItemCount(count($this->data));
+			return $this->paginatorCallback->invokeArgs(array($this->data, $this->paginator->getLength(), $this->paginator->getOffset()));
+		}
+		else {
+			return $this->data;
+		}
 	}
 
 	/**
@@ -161,4 +182,62 @@ class Renderer extends Nette\Object {
 	public function getRenderer() {
 		return new Control( $this );
 	}
+
+
+	/************************************************ paginator *******************************************************/
+
+	/**
+	 * @param $itemsPerPage
+	 */
+	public function enablePaginator($itemsPerPage) {
+		$this->paginator = new Nette\Utils\Paginator();
+		$this->paginator->setItemsPerPage($itemsPerPage);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isPaginatorEnabled() {
+		return $this->paginator instanceof Nette\Utils\Paginator;
+	}
+
+	/**
+	 * @param callable $paginatorCallback
+	 */
+	public function setPaginatorCallback($paginatorCallback) {
+		$this->paginatorCallback = new Nette\Callback($paginatorCallback);
+	}
+
+	/**
+	 * @param $position
+	 * @throws \Nette\InvalidArgumentException
+	 */
+	public function setPaginationPositions($position) {
+		if($position !== self::PAGINATION_NONE and
+			$position !== self::PAGINATION_BOTH and
+				$position !== self::PAGINATION_BOTTOM and
+					$position !== self::PAGINATION_TOP) {
+			throw new Nette\InvalidArgumentException;
+		}
+		$this->paginationPositions = $position;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getPaginationPositions() {
+		return $this->paginationPositions;
+	}
+
+	/**
+	 * @return Nette\Utils\Paginator
+	 * @throws \Nette\InvalidStateException
+	 */
+	public function getPaginator() {
+		if(!($this->paginator instanceof Nette\Utils\Paginator)) {
+			throw new Nette\InvalidStateException("Enable paginator first using enablePaginator()");
+		}
+		return $this->paginator;
+	}
+
 }
