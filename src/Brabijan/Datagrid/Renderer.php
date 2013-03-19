@@ -13,6 +13,9 @@ class Renderer extends Nette\Object {
 	/** @var array */
 	private $columns = array();
 
+	/** @var Nette\Localization\ITranslator */
+	private $translator;
+
 	/** @var string */
 	private $rowPrimaryKey;
 
@@ -24,9 +27,19 @@ class Renderer extends Nette\Object {
 	 */
 	public function addColumn($name, $mappedParameter, $format = null) {
 		$column = new Column( $name, $mappedParameter, $format );
+		if($this->translator instanceof Nette\Localization\ITranslator) {
+			$column->setTranslator($this->translator);
+		}
 		$this->columns[$name] = $column;
 
 		return $column;
+	}
+
+	/**
+	 * @param Nette\Localization\ITranslator $translator
+	 */
+	public function setTranslator(Nette\Localization\ITranslator $translator) {
+		$this->translator = $translator;
 	}
 
 	/**

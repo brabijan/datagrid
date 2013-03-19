@@ -15,6 +15,9 @@ class Column extends Nette\Object {
 	/** @var string */
 	public $content;
 
+	/** @var Nette\Localization\ITranslator */
+	private $translator;
+
 	/** @var bool */
 	private $hideTitle = false;
 
@@ -32,6 +35,10 @@ class Column extends Nette\Object {
 		$this->content = $format;
 	}
 
+	public function setTranslator(Nette\Localization\ITranslator $translator) {
+		$this->translator = $translator;
+	}
+
 	/**
 	 * @return $this provide fluent interface
 	 */
@@ -41,12 +48,16 @@ class Column extends Nette\Object {
 	}
 
 	/**
-	 * @return string column name
+	 * @param bool $ingoreHidden
+	 * @return string
 	 */
 	public function getName($ingoreHidden = false) {
 		$title = $this->name;
 		if(!$ingoreHidden and $this->hideTitle) {
 			$title = "";
+		}
+		if($this->translator instanceof Nette\Localization\ITranslator and !$ingoreHidden) {
+			$title = $this->translator->translate($title);
 		}
 		return $title;
 	}

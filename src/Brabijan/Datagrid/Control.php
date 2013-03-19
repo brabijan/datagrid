@@ -9,6 +9,9 @@ class Control extends Nette\Application\UI\Control {
 	/** @var Renderer */
 	private $renderer;
 
+	/** @var Nette\Localization\ITranslator */
+	private $translator;
+
 	/** @var string */
 	private $templateFile;
 
@@ -16,6 +19,10 @@ class Control extends Nette\Application\UI\Control {
 		parent::__construct();
 		$this->renderer = $renderer;
 		$this->templateFile = __DIR__ . '/control.latte';
+	}
+
+	public function setTranslator(Nette\Localization\ITranslator $translator) {
+		$this->translator = $translator;
 	}
 
 	public function setTemplateFile($filename) {
