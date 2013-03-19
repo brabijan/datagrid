@@ -74,7 +74,6 @@ class Renderer extends Nette\Object {
 	 * @return mixed array|Nette\Database\Table\Selection
 	 */
 	public function getData() {
-		Nette\Diagnostics\Debugger::barDump($this->isPaginatorEnabled());
 		if($this->isPaginatorEnabled()) {
 			$this->paginator->setItemCount(count($this->data));
 			return $this->paginatorCallback->invokeArgs(array($this->data, $this->paginator->getLength(), $this->paginator->getOffset()));
