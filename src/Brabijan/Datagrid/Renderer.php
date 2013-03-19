@@ -5,7 +5,7 @@ namespace Brabijan\Datagrid;
 use Nette,
 	QOP;
 
-class Renderer extends Nette\Object {
+class Renderer extends Nette\Application\UI\Control {
 
 	const PAGINATION_NONE = "__pagination_none_";
 	const PAGINATION_TOP = "__pagination_top_";
@@ -176,10 +176,12 @@ class Renderer extends Nette\Object {
 	}
 
 	/**
+	 * For back compatibility
+	 *
 	 * @return Control
 	 */
 	public function getRenderer() {
-		return new Control( $this );
+		return $this;
 	}
 
 
@@ -237,6 +239,39 @@ class Renderer extends Nette\Object {
 			throw new Nette\InvalidStateException("Enable paginator first using enablePaginator()");
 		}
 		return $this->paginator;
+	}
+
+
+	/************************************************** control *******************************************************/
+
+	public function render() {
+		$this->template->setFile(__DIR__ . '/control.latte');
+		$rows = array();
+		$primaryKey = $this->getRowPrimaryKey();
+		foreach($this->getData() as $row) {
+			$rows[] = $this["row_" . $row[$primaryKey]] = new Components\Row( $this->getColumns(), $row );
+		}
+
+		if($this->isPaginatorEnabled()) {
+			$this->template->paginationPosition = $this->paginationPositions;
+			$this->template->paginator = $this->paginator;
+		}
+		else {
+			$this->template->paginationPosition = Renderer::PAGINATION_NONE;
+		}
+		$this->template->rows = $rows;
+		$this->template->render();
+	}
+
+	public function handleSetPage($page) {
+		$this->paginator->setPage($page);
+		if($this->presenter->isAjax()) {
+			$this->invalidateControl("datagrid");
+		}
+	}
+
+	public function createComponentHeader() {
+		return new Components\Header( $this->getColumns() );
 	}
 
 }
