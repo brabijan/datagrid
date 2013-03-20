@@ -41,6 +41,9 @@ class Renderer extends Nette\Application\UI\Control {
 	/** @var Nette\Callback */
 	private $filterCallback;
 
+	/** @var bool */
+	private $filterManualRender = false;
+
 	/** @persistent */
 	public $filter = array();
 
@@ -265,6 +268,10 @@ class Renderer extends Nette\Application\UI\Control {
 		$this->filterCallback = new Nette\Callback($callback);
 	}
 
+	public function setFilterManualRender() {
+		$this->filterManualRender = true;
+	}
+
 	protected function createComponentFilterForm() {
 		$form = new Form;
 		$form->addContainer("filter");
@@ -300,6 +307,7 @@ class Renderer extends Nette\Application\UI\Control {
 		else {
 			$this->template->paginationPosition = Renderer::PAGINATION_NONE;
 		}
+		$this->template->renderFilter = !$this->filterManualRender;
 		$this->template->rows = $rows;
 		$this->template->render();
 	}
