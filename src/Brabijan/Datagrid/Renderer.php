@@ -276,8 +276,14 @@ class Renderer extends Nette\Application\UI\Control {
 		$form = new Form;
 		$form->addContainer("filter");
 		$this->filterFormFactory->invokeArgs(array($form["filter"]));
-		$form->addSubmit("send", "Filter!");
-		$form->onSuccess[] = $this->filterFormSubmitted;
+		$form["filter"]->setDefaults($this->filter);
+		$form->addSubmit("send", "Filter!")->onClick[] = $this->filterFormSubmitted;
+		$form->addSubmit("reset", "Reset")->onClick[] = function($button) {
+			foreach($button->form["filter"]->getComponents() as $control) {
+				$control->setValue(null);
+			}
+			$this->filter = array();
+		};
 		if($this->translator instanceof Nette\Localization\ITranslator) {
 			$form->setTranslator($this->translator);
 		}
@@ -285,7 +291,8 @@ class Renderer extends Nette\Application\UI\Control {
 		return $form;
 	}
 
-	public function filterFormSubmitted(Form $form) {
+	public function filterFormSubmitted(Nette\Forms\Controls\SubmitButton $button) {
+		$form = $button->form;
 		$this->filter = $form->values["filter"];
 	}
 
