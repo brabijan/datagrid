@@ -275,7 +275,8 @@ class Renderer extends Nette\Application\UI\Control {
 	protected function createComponentFilterForm() {
 		$form = new Form;
 		$form->addContainer("filter");
-		$this->filterFormFactory->invokeArgs(array($form["filter"]));
+		if($this->filterFormFactory)
+			$this->filterFormFactory->invokeArgs(array($form["filter"]));
 		$form["filter"]->setDefaults($this->filter);
 		$form->addSubmit("send", "Filter!")->onClick[] = $this->filterFormSubmitted;
 		$form->addSubmit("reset", "Reset")->onClick[] = function($button) {
