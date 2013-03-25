@@ -13,14 +13,20 @@ class Row extends Nette\Application\UI\Control {
 	/** @var mixed */
 	private $data;
 
+	/** @var Nette\Callback */
+	private $templateHelpersCallback;
+
 	/**
 	 * @param array $columns
 	 * @param array $data
+	 * @param Nette\Callback $templateHelpersCallback
+	 * @param string $customRowTemplate
 	 */
-	public function __construct($columns, $data) {
+	public function __construct($columns, $data, $templateHelpersCallback = null, $customRowTemplate = null) {
 		parent::__construct();
 		$this->columns = $columns;
 		$this->data = $data;
+		$this->templateHelpersCallback = $templateHelpersCallback;
 	}
 
 	/**
@@ -42,12 +48,16 @@ class Row extends Nette\Application\UI\Control {
 			}
 			$template = $this->createTemplate('Nette\Templating\Template');
 			$template->{'_control'} = $this->presenter;
+			if($this->templateHelpersCallback)
+				$this->templateHelpersCallback->invokeArgs(array($template));
 			foreach($column->mappedParameter as $parameter) {
 				$template->{$parameter} = $data[$parameter];
 			}
 			$template->setSource($content);
 			$columns[] = (string) $template;
 		}
+		if($this->templateHelpersCallback)
+			$this->templateHelpersCallback->invokeArgs(array($this->template));
 		$this->template->columns = $columns;
 		$this->template->render();
 	}

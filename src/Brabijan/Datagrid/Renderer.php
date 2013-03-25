@@ -41,11 +41,23 @@ class Renderer extends Nette\Application\UI\Control {
 	/** @var Nette\Callback */
 	private $filterCallback;
 
+	/** @var Nette\Callback */
+	private $templateHelpersCallback;
+
 	/** @var bool */
 	private $filterManualRender = false;
 
 	/** @persistent */
 	public $filter = array();
+
+	/** @var string */
+	private $customTemplate;
+
+	/** @var string */
+	private $customRowTemplate;
+
+	/** @var string */
+	private $customHeaderTemplate;
 
 	/**
 	 * @param $name
@@ -200,7 +212,6 @@ class Renderer extends Nette\Application\UI\Control {
 		return $this;
 	}
 
-
 	/************************************************ paginator *******************************************************/
 
 	/**
@@ -300,12 +311,34 @@ class Renderer extends Nette\Application\UI\Control {
 
 	/************************************************** control *******************************************************/
 
+	public function setCustomTemplate($file) {
+		$this->customTemplate = $file;
+	}
+
+	public function setCustomRowTemplate($file) {
+		$this->customRowTemplate = $file;
+	}
+
+	public function setCustomHeaderTemplate($file) {
+		$this->customHeaderTemplate = $file;
+	}
+
+	public function setTemplateHelpersCallback($templateHelpersCallback) {
+		$this->templateHelpersCallback = new Nette\Callback($templateHelpersCallback);
+	}
+
 	public function render() {
-		$this->template->setFile(__DIR__ . '/control.latte');
+		if($this->customTemplate === null)
+			$this->template->setFile(__DIR__ . '/control.latte');
+		else {
+			$this->template->setFile($this->customTemplate);
+			$this->template->extend = __DIR__ . '/control.latte';
+		}
+
 		$rows = array();
 		$primaryKey = $this->getRowPrimaryKey();
 		foreach($this->getData() as $row) {
-			$rows[] = $this["row_" . $row[$primaryKey]] = new Components\Row( $this->getColumns(), $row );
+			$rows[] = $this["row_" . $row[$primaryKey]] = new Components\Row( $this->getColumns(), $row, $this->templateHelpersCallback, $this->customRowTemplate ? $this->customRowTemplate : null );
 		}
 
 		if($this->isPaginatorEnabled()) {
@@ -315,6 +348,8 @@ class Renderer extends Nette\Application\UI\Control {
 		else {
 			$this->template->paginationPosition = Renderer::PAGINATION_NONE;
 		}
+		if($this->templateHelpersCallback)
+			$this->templateHelpersCallback->invokeArgs(array($this->template));
 		$this->template->showFilter = $this->filterFormFactory ? true : false;
 		$this->template->renderFilter = !$this->filterManualRender;
 		$this->template->rows = $rows;
@@ -329,7 +364,7 @@ class Renderer extends Nette\Application\UI\Control {
 	}
 
 	public function createComponentHeader() {
-		return new Components\Header( $this->getColumns() );
+		return new Components\Header( $this->getColumns(), $this->customHeaderTemplate ? $this->customHeaderTemplate : null );
 	}
 
 }
