@@ -315,6 +315,7 @@ class Renderer extends Nette\Application\UI\Control {
 		else {
 			$this->template->paginationPosition = Renderer::PAGINATION_NONE;
 		}
+		$this->template->showFilter = $this->filterFormFactory ? true : false;
 		$this->template->renderFilter = !$this->filterManualRender;
 		$this->template->rows = $rows;
 		$this->template->render();

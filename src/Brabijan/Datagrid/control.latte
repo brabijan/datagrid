@@ -1,4 +1,4 @@
-{if $renderFilter}{control filterForm}{/if}
+{if $showFilter}{control filterForm}{/if}
 {if $paginationPosition !== "__pagination_none_"}
 	{capture $paginatorControl}
 		{var $pg = $paginator}
