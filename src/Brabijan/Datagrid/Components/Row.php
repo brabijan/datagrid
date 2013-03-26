@@ -11,7 +11,7 @@ class Row extends Nette\Application\UI\Control {
 	private $columns;
 
 	/** @var mixed */
-	private $data;
+	public $data;
 
 	/** @var Nette\Callback */
 	private $templateHelpersCallback;

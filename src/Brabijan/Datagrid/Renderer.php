@@ -44,6 +44,9 @@ class Renderer extends Nette\Application\UI\Control {
 	/** @var Nette\Callback */
 	private $templateHelpersCallback;
 
+	/** @var Nette\Callback */
+	private $templateRowCallback;
+
 	/** @var bool */
 	private $filterManualRender = false;
 
@@ -327,6 +330,10 @@ class Renderer extends Nette\Application\UI\Control {
 		$this->templateHelpersCallback = new Nette\Callback($templateHelpersCallback);
 	}
 
+	public function setTemplateRowCallback($templateRowCallback) {
+		$this->templateRowCallback = new Nette\Callback($templateRowCallback);
+	}
+
 	public function render() {
 		if($this->customTemplate === null)
 			$this->template->setFile(__DIR__ . '/control.latte');
@@ -339,6 +346,8 @@ class Renderer extends Nette\Application\UI\Control {
 		$primaryKey = $this->getRowPrimaryKey();
 		foreach($this->getData() as $row) {
 			$rows[] = $this["row_" . $row[$primaryKey]] = new Components\Row( $this->getColumns(), $row, $this->templateHelpersCallback, $this->customRowTemplate ? $this->customRowTemplate : null );
+			if($this->templateRowCallback)
+				$this->templateRowCallback->invokeArgs(array($this["row_" . $row[$primaryKey]]));
 		}
 
 		if($this->isPaginatorEnabled()) {
