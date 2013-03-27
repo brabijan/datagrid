@@ -104,7 +104,7 @@ class Renderer extends Nette\Application\UI\Control {
 	 */
 	public function getData() {
 		$data = $this->data;
-		if(!empty($this->filter)) {
+		if(!empty($this->filter) and $this->filterCallback !== null) {
 			$data = $this->filterCallback->invokeArgs(array($data, $this->filter));
 		}
 		if($this->isPaginatorEnabled()) {
