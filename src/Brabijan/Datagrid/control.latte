@@ -22,7 +22,7 @@
 <table class="table table-hover table-striped">
 	{control header}
 	{foreach $rows as $row}
-		{$row->render()}
+		{control row-$row}
 	{/foreach}
 </table>
 {if $paginationPosition === "__pagination_bottom_" or $paginationPosition === "__pagination_both_"}

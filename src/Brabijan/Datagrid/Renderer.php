@@ -18,6 +18,9 @@ class Renderer extends Nette\Application\UI\Control {
 	private $data = array();
 
 	/** @var array */
+	private $filteredData = array();
+
+	/** @var Column[] */
 	private $columns = array();
 
 	/** @var Nette\Localization\ITranslator */
@@ -73,7 +76,7 @@ class Renderer extends Nette\Application\UI\Control {
 		if($this->translator instanceof Nette\Localization\ITranslator) {
 			$column->setTranslator($this->translator);
 		}
-		$this->columns[$name] = $column;
+		$this->columns[] = $column;
 
 		return $column;
 	}
@@ -103,15 +106,27 @@ class Renderer extends Nette\Application\UI\Control {
 	 * @return mixed array|Nette\Database\Table\Selection
 	 */
 	public function getData() {
-		$data = $this->data;
-		if(!empty($this->filter) and $this->filterCallback !== null) {
-			$data = $this->filterCallback->invokeArgs(array($data, $this->filter));
+		if(empty($this->filteredData)) {
+			$data = $this->data;
+			if(!empty($this->filter) and $this->filterCallback !== null) {
+				$data = $this->filterCallback->invokeArgs(array($data, $this->filter));
+			}
+			if($this->isPaginatorEnabled()) {
+				$this->paginator->setItemCount(count($data));
+				$data = $this->paginatorCallback->invokeArgs(array($data, $this->paginator->getLength(), $this->paginator->getOffset()));
+			}
+			foreach($data as $row) {
+				$this->filteredData[$row->{$this->getRowPrimaryKey()}] = $row;
+			}
 		}
-		if($this->isPaginatorEnabled()) {
-			$this->paginator->setItemCount(count($data));
-			$data = $this->paginatorCallback->invokeArgs(array($data, $this->paginator->getLength(), $this->paginator->getOffset()));
+		return $this->filteredData;
+	}
+
+	private function getRow($rowPrimary) {
+		if(empty($this->filteredData)) {
+			$this->getData();
 		}
-		return $data;
+		return $this->filteredData[$rowPrimary];
 	}
 
 	/**
@@ -140,7 +155,14 @@ class Renderer extends Nette\Application\UI\Control {
 	 * @return Column
 	 */
 	public function getColumn($columnName) {
-		return $this->columns[$columnName];
+		if(is_int($columnName))
+			return $this->columns[$columnName];
+		else {
+			foreach($this->columns as $column) {
+				if($column->getName(true)==$columnName)
+					return $column;
+			}
+		}
 	}
 
 	/**
@@ -152,8 +174,9 @@ class Renderer extends Nette\Application\UI\Control {
 	public function move($column, $where, $after = null) {
 		if($where == "first") {
 			$columns = array();
-			$columns[$column] = $this->columns[$column];
+			$columns[] = $this->getColumn($column);
 			foreach($this->columns as $columnName => $tmpcolumn) {
+				$columnName = $tmpcolumn->getName(true);
 				if($columnName!=$column) {
 					$columns[$columnName] = $tmpcolumn;
 				}
@@ -163,12 +186,13 @@ class Renderer extends Nette\Application\UI\Control {
 		}
 		elseif($where == "last") {
 			$columns = array();
-			foreach($this->columns as $columnName => $tmpcolumn) {
+			foreach($this->columns as $tmpcolumn) {
+				$columnName = $tmpcolumn->getName(true);
 				if($columnName!=$column) {
-					$columns[$columnName] = $tmpcolumn;
+					$columns[] = $tmpcolumn;
 				}
 			}
-			$columns[$column] = $this->columns[$column];
+			$columns[] = $this->getColumn($column);
 			$this->columns = $columns;
 			return;
 		}
@@ -177,12 +201,13 @@ class Renderer extends Nette\Application\UI\Control {
 				throw new Nette\InvalidStateException("Some parameter missing");
 			}
 			$columns = array();
-			foreach($this->columns as $columnName => $tmpcolumn) {
+			foreach($this->columns as $tmpcolumn) {
+				$columnName = $tmpcolumn->getName(true);
 				if($columnName==$after) {
-					$columns[$column] = $this->columns[$column];
+					$columns[] = $this->getColumn($columnName);
 				}
 				if($columnName!=$column) {
-					$columns[$columnName] = $tmpcolumn;
+					$columns[] = $tmpcolumn;
 				}
 			}
 			$this->columns = $columns;
@@ -193,12 +218,13 @@ class Renderer extends Nette\Application\UI\Control {
 				throw new Nette\InvalidStateException("Some parameter missing");
 			}
 			$columns = array();
-			foreach($this->columns as $columnName => $tmpcolumn) {
+			foreach($this->columns as $tmpcolumn) {
+				$columnName = $tmpcolumn->getName(true);
 				if($columnName!=$column) {
-					$columns[$columnName] = $tmpcolumn;
+					$columns[] = $tmpcolumn;
 				}
 				if($columnName==$after) {
-					$columns[$column] = $this->columns[$column];
+					$columns[] = $this->getColumn($columnName);
 				}
 			}
 			$this->columns = $columns;
@@ -237,6 +263,10 @@ class Renderer extends Nette\Application\UI\Control {
 	 */
 	public function setPaginatorCallback($paginatorCallback) {
 		$this->paginatorCallback = new Nette\Callback($paginatorCallback);
+	}
+
+	public function getPaginatorCallback() {
+		return $this->paginatorCallback;
 	}
 
 	/**
@@ -280,6 +310,10 @@ class Renderer extends Nette\Application\UI\Control {
 
 	public function setFilterCallback($callback) {
 		$this->filterCallback = new Nette\Callback($callback);
+	}
+
+	public function getFilterCallback() {
+		return $this->filterCallback;
 	}
 
 	public function setFilterManualRender() {
@@ -330,8 +364,22 @@ class Renderer extends Nette\Application\UI\Control {
 		$this->templateHelpersCallback = new Nette\Callback($templateHelpersCallback);
 	}
 
+	public function getTemplateHelpersCallback() {
+		return $this->templateHelpersCallback;
+	}
+
 	public function setTemplateRowCallback($templateRowCallback) {
 		$this->templateRowCallback = new Nette\Callback($templateRowCallback);
+	}
+
+	public function getTemplateRowCallback() {
+		return $this->templateRowCallback;
+	}
+
+	public function createTemplate($class = null) {
+		$template = parent::createTemplate($class);
+
+		return $template;
 	}
 
 	public function render() {
@@ -342,13 +390,8 @@ class Renderer extends Nette\Application\UI\Control {
 			$this->template->extend = __DIR__ . '/control.latte';
 		}
 
-		$rows = array();
-		$primaryKey = $this->getRowPrimaryKey();
-		foreach($this->getData() as $row) {
-			$rows[] = $this["row_" . $row[$primaryKey]] = new Components\Row( $this->getColumns(), $row, $this->templateHelpersCallback, $this->customRowTemplate ? $this->customRowTemplate : null );
-			if($this->templateRowCallback)
-				$this->templateRowCallback->invokeArgs(array($this["row_" . $row[$primaryKey]]));
-		}
+		$this->template->rows = array_keys($this->getData());
+
 
 		if($this->isPaginatorEnabled()) {
 			$this->template->paginationPosition = $this->paginationPositions;
@@ -360,7 +403,6 @@ class Renderer extends Nette\Application\UI\Control {
 		if($this->templateHelpersCallback)
 			$this->templateHelpersCallback->invokeArgs(array($this->template));
 		$this->template->showFilter = !$this->filterManualRender and ($this->filterFormFactory ? true : false);
-		$this->template->rows = $rows;
 		$this->template->render();
 	}
 
@@ -373,6 +415,13 @@ class Renderer extends Nette\Application\UI\Control {
 
 	public function createComponentHeader() {
 		return new Components\Header( $this->getColumns(), $this->customHeaderTemplate ? $this->customHeaderTemplate : null );
+	}
+
+	protected function createComponentRow() {
+		$that = $this;
+		return new Nette\Application\UI\Multiplier(function($rowId) use ($that) {
+			return new Components\Row($that->getRow($rowId));
+		});
 	}
 
 }
