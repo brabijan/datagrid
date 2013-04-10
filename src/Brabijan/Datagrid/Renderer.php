@@ -402,7 +402,8 @@ class Renderer extends Nette\Application\UI\Control {
 		}
 		if($this->templateHelpersCallback)
 			$this->templateHelpersCallback->invokeArgs(array($this->template));
-		$this->template->showFilter = !$this->filterManualRender and ($this->filterFormFactory ? true : false);
+		$this->template->showFilter = ($this->filterManualRender == false and $this->filterFormFactory !== null);
+
 		$this->template->render();
 	}
 
