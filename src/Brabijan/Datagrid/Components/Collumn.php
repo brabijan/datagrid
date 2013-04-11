@@ -38,6 +38,7 @@ class Collumn extends Nette\Application\UI\Control {
 	}
 
 	public function render() {
+		$this->template->row = $this->data;
 		foreach($this->column->mappedParameter as $parameter) {
 			$this->template->{$parameter} = $this->data[$parameter];
 		}
