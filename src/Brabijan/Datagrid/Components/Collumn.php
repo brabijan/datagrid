@@ -32,9 +32,7 @@ class Collumn extends Nette\Application\UI\Control {
 	}
 
 	public function createTemplate($class = null) {
-		$template = parent::createTemplate('Nette\Templating\Template');
-		$template->registerHelperLoader('QOP\Template\Helpers::loader');
-		return $template;
+		return parent::createTemplate('Nette\Templating\Template');
 	}
 
 	public function render() {
