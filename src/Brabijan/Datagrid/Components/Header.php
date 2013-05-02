@@ -2,20 +2,27 @@
 
 namespace Brabijan\Datagrid\Components;
 
-use Nette,
-	QOP;
+use Nette;
+use QOP;
 
-class Header extends Nette\Application\UI\Control {
+class Header extends Nette\Application\UI\Control
+{
 
 	/** @var array */
 	private $columns;
 
-	public function __construct($columns) {
+
+
+	public function __construct($columns)
+	{
 		parent::__construct();
 		$this->columns = $columns;
 	}
 
-	public function render() {
+
+
+	public function render()
+	{
 		$this->template->setFile(__DIR__ . "/header.latte");
 		$this->template->columns = $this->columns;
 		$this->template->render();

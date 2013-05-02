@@ -4,7 +4,8 @@ namespace Brabijan\Datagrid\Components;
 
 use Nette;
 
-class Collumn extends Nette\Application\UI\Control {
+class Collumn extends Nette\Application\UI\Control
+{
 
 	/** @var array */
 	public $data;
@@ -18,35 +19,47 @@ class Collumn extends Nette\Application\UI\Control {
 	/** @var Nette\Callback */
 	private $templateRowCallback;
 
-	public function __construct($columnId, $data, $templateRowCallback) {
+
+
+	public function __construct($columnId, $data, $templateRowCallback)
+	{
 		$this->columnId = $columnId;
 		$this->data = $data;
 		$this->templateRowCallback = $templateRowCallback;
 	}
 
-	public function attached($presenter) {
+
+
+	public function attached($presenter)
+	{
 		parent::attached($presenter);
 		$this->column = $this->lookup('Brabijan\Datagrid\Renderer')->getColumn($this->columnId);
-		if($this->templateRowCallback)
+		if ($this->templateRowCallback) {
 			$this->templateRowCallback->invokeArgs(array($this));
+		}
 	}
 
-	public function createTemplate($class = null) {
+
+
+	public function createTemplate($class = NULL)
+	{
 		return parent::createTemplate('Nette\Templating\Template');
 	}
 
-	public function render() {
+
+
+	public function render()
+	{
 		$this->template->row = $this->data;
-		foreach($this->column->mappedParameter as $parameter) {
+		foreach ($this->column->mappedParameter as $parameter) {
 			$this->template->{$parameter} = $this->data[$parameter];
 		}
-		if($this->column->content == null) {
+		if ($this->column->content == NULL) {
 			$content = "";
-			foreach($this->column->mappedParameter as $parameter) {
+			foreach ($this->column->mappedParameter as $parameter) {
 				$content .= '{$' . $parameter . '} ';
 			}
-		}
-		else {
+		} else {
 			$content = $this->column->content;
 		}
 		$this->template->{'_control'} = $this->presenter;

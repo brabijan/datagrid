@@ -2,10 +2,11 @@
 
 namespace Brabijan\Datagrid\Components;
 
-use Nette,
-	QOP;
+use Nette;
+use QOP;
 
-class Row extends Nette\Application\UI\Control {
+class Row extends Nette\Application\UI\Control
+{
 
 	/** @var array */
 	private $columns;
@@ -19,15 +20,21 @@ class Row extends Nette\Application\UI\Control {
 	/** @var Nette\Callback */
 	private $templateRowCallback;
 
+
+
 	/**
 	 * @param array $data
 	 */
-	public function __construct($data) {
+	public function __construct($data)
+	{
 		parent::__construct();
 		$this->data = $data;
 	}
 
-	public function attached($presenter) {
+
+
+	public function attached($presenter)
+	{
 		parent::attached($presenter);
 
 		/** @var $renderer \Brabijan\Datagrid\Renderer */
@@ -37,18 +44,26 @@ class Row extends Nette\Application\UI\Control {
 		$this->templateRowCallback = $renderer->getTemplateRowCallback();
 	}
 
-	public function createTemplate($class = NULL) {
+
+
+	public function createTemplate($class = NULL)
+	{
 		$template = parent::createTemplate($class);
+
 		return $template;
 	}
+
+
 
 	/**
 	 *
 	 */
-	public function render() {
+	public function render()
+	{
 		$this->template->setFile(__DIR__ . "/row.latte");
-		if($this->templateHelpersCallback)
+		if ($this->templateHelpersCallback) {
 			$this->templateHelpersCallback->invokeArgs(array($this->template));
+		}
 
 		/** @var $renderer \Brabijan\Datagrid\Renderer */
 		$renderer = $this->lookup('Brabijan\Datagrid\Renderer');
@@ -56,10 +71,14 @@ class Row extends Nette\Application\UI\Control {
 		$this->template->render();
 	}
 
-	protected function createComponentColumn() {
+
+
+	protected function createComponentColumn()
+	{
 		$data = $this->data;
 		$templateRowCallback = $this->templateRowCallback;
-		return new Nette\Application\UI\Multiplier(function($collumnId) use ($data, $templateRowCallback) {
+
+		return new Nette\Application\UI\Multiplier(function ($collumnId) use ($data, $templateRowCallback) {
 			return new Collumn((int) $collumnId, $data, $templateRowCallback);
 		});
 	}
