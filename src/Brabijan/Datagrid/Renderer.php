@@ -442,6 +442,14 @@ class Renderer extends Nette\Application\UI\Control
 
 
 
+	public function getVisibility()
+	{
+		$data = $this->getData();
+		return empty($data) ? FALSE : TRUE;
+	}
+
+
+
 	public function setCustomRowTemplate($file)
 	{
 		$this->customRowTemplate = $file;
