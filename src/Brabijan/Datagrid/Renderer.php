@@ -2,10 +2,10 @@
 
 namespace Brabijan\Datagrid;
 
-use Nette,
-	Nette\Application\UI\Form,
-	QOP,
-	Kdyby;
+use Kdyby;
+use Nette;
+use Nette\Application\UI\Form;
+use QOP;
 
 class Renderer extends Nette\Application\UI\Control
 {
@@ -191,9 +191,9 @@ class Renderer extends Nette\Application\UI\Control
 	 */
 	public function getColumn($columnName)
 	{
-		if (is_int($columnName))
+		if (is_int($columnName)) {
 			return $this->columns[$columnName];
-		else {
+		} else {
 			foreach ($this->columns as $column) {
 				if ($column->getName(TRUE) == $columnName) {
 					return $column;
@@ -404,8 +404,9 @@ class Renderer extends Nette\Application\UI\Control
 	{
 		$form = new Form;
 		$form->addContainer("filter");
-		if ($this->filterFormFactory)
+		if ($this->filterFormFactory) {
 			$this->filterFormFactory->invokeArgs(array($form["filter"]));
+		}
 		$form["filter"]->setDefaults($this->filter);
 		$form->addSubmit("send", "Filter!")->onClick[] = $this->filterFormSubmitted;
 		$form->addSubmit("reset", "Reset")->onClick[] = function ($button) {
@@ -494,9 +495,9 @@ class Renderer extends Nette\Application\UI\Control
 
 	public function render()
 	{
-		if ($this->customTemplate === NULL)
+		if ($this->customTemplate === NULL) {
 			$this->template->setFile(__DIR__ . '/control.latte');
-		else {
+		} else {
 			$this->template->setFile($this->customTemplate);
 			$this->template->extend = __DIR__ . '/control.latte';
 		}
@@ -510,8 +511,9 @@ class Renderer extends Nette\Application\UI\Control
 		} else {
 			$this->template->paginationPosition = Renderer::PAGINATION_NONE;
 		}
-		if ($this->templateHelpersCallback)
+		if ($this->templateHelpersCallback) {
 			$this->templateHelpersCallback->invokeArgs(array($this->template));
+		}
 		$this->template->showFilter = ($this->filterManualRender == FALSE and $this->filterFormFactory !== NULL);
 
 		$this->template->render();
