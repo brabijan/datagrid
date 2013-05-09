@@ -167,6 +167,9 @@ class Renderer extends Nette\Application\UI\Control
 	 */
 	public function removeColumn($columnName)
 	{
+		if (is_string($columnName)) {
+			$columnName = $this->getColumn($columnName, TRUE);
+		}
 		unset($this->columns[$columnName]);
 	}
 
@@ -174,16 +177,17 @@ class Renderer extends Nette\Application\UI\Control
 
 	/**
 	 * @param $columnName
-	 * @return Column
+	 * @param bool $getKey
+	 * @return Column|int
 	 */
-	public function getColumn($columnName)
+	public function getColumn($columnName, $getKey = FALSE)
 	{
 		if (is_int($columnName)) {
 			return $this->columns[$columnName];
 		} else {
-			foreach ($this->columns as $column) {
+			foreach ($this->columns as $key => $column) {
 				if ($column->getName(TRUE) == $columnName) {
-					return $column;
+					return $getKey ? $key : $column;
 				}
 			}
 		}
@@ -432,6 +436,7 @@ class Renderer extends Nette\Application\UI\Control
 	public function getVisibility()
 	{
 		$data = $this->getData();
+
 		return empty($data) ? FALSE : TRUE;
 	}
 
