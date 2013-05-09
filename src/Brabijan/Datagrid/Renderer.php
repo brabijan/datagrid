@@ -30,9 +30,6 @@ class Renderer extends Nette\Application\UI\Control
 	/** @var Nette\Localization\ITranslator */
 	private $translator;
 
-	/** @var string */
-	private $rowPrimaryKey = "id";
-
 	/** @var Nette\Utils\Paginator */
 	private $paginator;
 
@@ -135,7 +132,7 @@ class Renderer extends Nette\Application\UI\Control
 				$data = $this->paginatorCallback->invokeArgs(array($data, $this->paginator->getLength(), $this->paginator->getOffset()));
 			}
 			foreach ($data as $row) {
-				$this->filteredData[$row->{$this->getRowPrimaryKey()}] = $row;
+				$this->filteredData[] = $row;
 			}
 		}
 
@@ -160,17 +157,7 @@ class Renderer extends Nette\Application\UI\Control
 	 */
 	public function setRowPrimaryKey($key)
 	{
-		$this->rowPrimaryKey = $key;
-	}
-
-
-
-	/**
-	 * @return string
-	 */
-	public function getRowPrimaryKey()
-	{
-		return $this->rowPrimaryKey;
+		trigger_error("Calling setRowPrimaryKey is deprecated", E_DEPRECATED);
 	}
 
 
