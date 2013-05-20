@@ -235,7 +235,7 @@ class Renderer extends Nette\Application\UI\Control
 			foreach ($this->columns as $tmpcolumn) {
 				$columnName = $tmpcolumn->getName(TRUE);
 				if ($columnName == $after) {
-					$columns[] = $this->getColumn($columnName);
+					$columns[] = $this->getColumn($column);
 				}
 				if ($columnName != $column) {
 					$columns[] = $tmpcolumn;
@@ -255,7 +255,7 @@ class Renderer extends Nette\Application\UI\Control
 					$columns[] = $tmpcolumn;
 				}
 				if ($columnName == $after) {
-					$columns[] = $this->getColumn($columnName);
+					$columns[] = $this->getColumn($column);
 				}
 			}
 			$this->columns = $columns;
