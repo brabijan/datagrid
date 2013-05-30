@@ -4,7 +4,7 @@ namespace Brabijan\Datagrid\Components;
 
 use Nette;
 
-class Collumn extends Nette\Application\UI\Control
+class Column extends Nette\Application\UI\Control
 {
 
 	/** @var array */

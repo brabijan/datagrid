@@ -78,8 +78,8 @@ class Row extends Nette\Application\UI\Control
 		$data = $this->data;
 		$templateRowCallback = $this->templateRowCallback;
 
-		return new Nette\Application\UI\Multiplier(function ($collumnId) use ($data, $templateRowCallback) {
-			return new Collumn((int) $collumnId, $data, $templateRowCallback);
+		return new Nette\Application\UI\Multiplier(function ($columnId) use ($data, $templateRowCallback) {
+			return new Column((int) $columnId, $data, $templateRowCallback);
 		});
 	}
 
