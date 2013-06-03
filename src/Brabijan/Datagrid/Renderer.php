@@ -410,7 +410,6 @@ class Renderer extends Nette\Application\UI\Control
 		if ($this->translator instanceof Nette\Localization\ITranslator) {
 			$form->setTranslator($this->translator);
 		}
-		$form->setRenderer(new Kdyby\BootstrapFormRenderer\BootstrapRenderer());
 
 		return $form;
 	}
