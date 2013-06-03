@@ -52,6 +52,9 @@ class Renderer extends Nette\Application\UI\Control
 	/** @var bool */
 	private $filterManualRender = FALSE;
 
+	/** @var string */
+	private $rowVariable;
+
 	/** @persistent */
 	public $filter = array();
 
@@ -61,8 +64,8 @@ class Renderer extends Nette\Application\UI\Control
 	/** @var string */
 	private $customRowTemplate;
 
-	/** @var string */
-	private $customHeaderTemplate;
+	/** @var bool */
+	private $hideDatagridHeaders = FALSE;
 
 
 
@@ -440,16 +443,44 @@ class Renderer extends Nette\Application\UI\Control
 
 
 
-	public function setCustomRowTemplate($file)
+	public function setRowVariable($variable)
 	{
-		$this->customRowTemplate = $file;
+		$this->rowVariable = $variable;
+
+		return $this;
 	}
 
 
 
-	public function setCustomHeaderTemplate($file)
+	public function getRowVariable()
 	{
-		$this->customHeaderTemplate = $file;
+		return $this->rowVariable === NULL ? 'row' : ltrim($this->rowVariable, '$');
+	}
+
+
+
+	/**
+	 * @param $template Nette\Templating\ITemplate|string
+	 */
+	public function setCustomRowTemplate($template)
+	{
+		if ($template instanceof Nette\Templating\ITemplate) {
+			$this->customRowTemplate = $template;
+		} else {
+			$this->customRowTemplate = $this->createTemplate('Nette\Templating\Template');
+			$this->customRowTemplate->setSource($template);
+		}
+		$this->hideDatagridHeaders = TRUE;
+	}
+
+
+
+	/**
+	 * @return Nette\Templating\ITemplate
+	 */
+	public function getCustomRowTemplate()
+	{
+		return $this->customRowTemplate !== NULL ? $this->customRowTemplate : FALSE;
 	}
 
 
@@ -482,15 +513,6 @@ class Renderer extends Nette\Application\UI\Control
 
 
 
-	public function createTemplate($class = NULL)
-	{
-		$template = parent::createTemplate($class);
-
-		return $template;
-	}
-
-
-
 	public function render()
 	{
 		if ($this->customTemplate === NULL) {
@@ -513,6 +535,7 @@ class Renderer extends Nette\Application\UI\Control
 			$this->templateHelpersCallback->invokeArgs(array($this->template));
 		}
 		$this->template->showFilter = ($this->filterManualRender == FALSE and $this->filterFormFactory !== NULL);
+		$this->template->showHeaders = !$this->hideDatagridHeaders;
 
 		$this->template->render();
 	}
@@ -531,7 +554,7 @@ class Renderer extends Nette\Application\UI\Control
 
 	public function createComponentHeader()
 	{
-		return new Components\Header($this->getColumns(), $this->customHeaderTemplate ? $this->customHeaderTemplate : NULL);
+		return new Components\Header($this->getColumns());
 	}
 
 
@@ -541,7 +564,7 @@ class Renderer extends Nette\Application\UI\Control
 		$that = $this;
 
 		return new Nette\Application\UI\Multiplier(function ($rowId) use ($that) {
-			return new Components\Row($that->getRow($rowId));
+			return new Components\Row($that->getRow($rowId), new DummyIterator($rowId, $that->data));
 		});
 	}
 

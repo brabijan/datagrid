@@ -19,12 +19,16 @@
 {if $paginationPosition === "__pagination_top_" or $paginationPosition === "__pagination_both_"}
 	{!$paginatorControl}
 {/if}
+{if $showHeaders}
 <table class="table table-hover table-striped">
 	{control header}
+{/if}
 	{foreach $rows as $row}
 		{control row-$row}
 	{/foreach}
+{if $showHeaders}
 </table>
+{/if}
 {if $paginationPosition === "__pagination_bottom_" or $paginationPosition === "__pagination_both_"}
 	{!$paginatorControl}
 {/if}
