@@ -3,7 +3,6 @@
 namespace Brabijan\Datagrid\Components;
 
 use Nette;
-use QOP;
 
 class Header extends Nette\Application\UI\Control
 {

@@ -2,10 +2,8 @@
 
 namespace Brabijan\Datagrid;
 
-use Kdyby;
 use Nette;
 use Nette\Application\UI\Form;
-use QOP;
 
 class Renderer extends Nette\Application\UI\Control
 {

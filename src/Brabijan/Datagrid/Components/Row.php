@@ -3,32 +3,30 @@
 namespace Brabijan\Datagrid\Components;
 
 use Nette;
-use QOP;
+use Brabijan;
 
 class Row extends Nette\Application\UI\Control
 {
 
-	/** @var array */
-	private $columns;
-
 	/** @var mixed */
-	public $data;
+	private $data;
 
-	/** @var Nette\Callback */
-	private $templateHelpersCallback;
+	/** @var Brabijan\Datagrid\Renderer */
+	private $renderer;
 
-	/** @var Nette\Callback */
-	private $templateRowCallback;
+	/** @var Brabijan\Datagrid\DummyIterator */
+	private $dummyIterator;
 
 
 
 	/**
 	 * @param array $data
 	 */
-	public function __construct($data)
+	public function __construct($data, Brabijan\Datagrid\DummyIterator $dummyIterator)
 	{
 		parent::__construct();
 		$this->data = $data;
+		$this->dummyIterator = $dummyIterator;
 	}
 
 
@@ -36,21 +34,25 @@ class Row extends Nette\Application\UI\Control
 	public function attached($presenter)
 	{
 		parent::attached($presenter);
-
-		/** @var $renderer \Brabijan\Datagrid\Renderer */
-		$renderer = $this->lookup('Brabijan\Datagrid\Renderer');
-		$this->columns = $renderer->getColumns();
-		$this->templateHelpersCallback = $renderer->getTemplateHelpersCallback();
-		$this->templateRowCallback = $renderer->getTemplateRowCallback();
+		$this->renderer = $this->lookup('Brabijan\Datagrid\Renderer');
 	}
 
 
 
 	public function createTemplate($class = NULL)
 	{
-		$template = parent::createTemplate($class);
+		if ($this->renderer->getCustomRowTemplate() instanceof Nette\Templating\ITemplate) {
+			$tpl = clone $this->renderer->getCustomRowTemplate();
+		} else {
+			$tpl = parent::createTemplate($class);
+			$tpl->setFile(__DIR__ . "/row.latte");
+		}
 
-		return $template;
+		if ($this->renderer->getTemplateHelpersCallback()) {
+			$this->renderer->getTemplateHelpersCallback()->invokeArgs(array($tpl));
+		}
+
+		return $tpl;
 	}
 
 
@@ -60,14 +62,9 @@ class Row extends Nette\Application\UI\Control
 	 */
 	public function render()
 	{
-		$this->template->setFile(__DIR__ . "/row.latte");
-		if ($this->templateHelpersCallback) {
-			$this->templateHelpersCallback->invokeArgs(array($this->template));
-		}
-
-		/** @var $renderer \Brabijan\Datagrid\Renderer */
-		$renderer = $this->lookup('Brabijan\Datagrid\Renderer');
-		$this->template->columns = array_keys($renderer->getColumns());
+		$this->template->{$this->renderer->getRowVariable()} = $this->data;
+		$this->template->columns = array_keys($this->renderer->getColumns());
+		$this->template->iterator = $this->dummyIterator;
 		$this->template->render();
 	}
 
@@ -76,11 +73,106 @@ class Row extends Nette\Application\UI\Control
 	protected function createComponentColumn()
 	{
 		$data = $this->data;
-		$templateRowCallback = $this->templateRowCallback;
+		$templateRowCallback = $this->renderer->getTemplateRowCallback();
 
 		return new Nette\Application\UI\Multiplier(function ($columnId) use ($data, $templateRowCallback) {
 			return new Column((int) $columnId, $data, $templateRowCallback);
 		});
 	}
 
+}
+
+
+
+class AssetsManager extends Nette\Object
+{
+
+	/** @var string */
+	private $jsPath;
+
+	/** @var string */
+	private $cssPath;
+
+	/** @var array */
+	private $js = array();
+
+	/** @var array */
+	private $css = array();
+
+	/** @var bool */
+	private $debugMode;
+
+
+
+	public function __construct($debugMode, $jsPath, $cssPath)
+	{
+		$this->debugMode = $debugMode;
+		$this->jsPath = $jsPath;
+		$this->cssPath = $cssPath;
+	}
+
+
+
+	public function addCss($files)
+	{
+		if (!is_array($files)) {
+			$files = array($files);
+		}
+
+		foreach ($files as $file) {
+			$this->css[] = $file;
+		}
+	}
+
+
+
+	public function addJs($files)
+	{
+		if (!is_array($files)) {
+			$files = array($files);
+		}
+
+		foreach ($files as $file) {
+			$this->js[] = $file;
+		}
+	}
+
+
+
+	public function getCss()
+	{
+		$this->validateAssets();
+
+		return $this->css;
+	}
+
+
+
+	public function getJs()
+	{
+		$this->validateAssets();
+
+		return $this->js;
+	}
+
+
+
+	private function validateAssets()
+	{
+		if (!$this->debugMode) {
+			return;
+		}
+
+		foreach ($this->css as $css) {
+			if (file_exists($this->cssPath . $css)) {
+				throw new Nette\FileNotFoundException("Style $css was not found");
+			}
+		}
+
+		foreach ($this->js as $js) {
+			if (file_exists($this->jsPath . $js)) {
+				throw new Nette\FileNotFoundException("Style $js was not found");
+			}
+		}
+	}
 }
